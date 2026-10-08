@@ -7,17 +7,7 @@ products:
     manufacturer: Zemismart
     model: SPM01-D2TW-ZM
 entities:
-  - entity: switch
-    icon: "mdi:fuse"
-    name: Fuse switch
-    dps:
-      - id: 16
-        name: switch
-        type: boolean
-      - id: 19
-        type: string
-        optional: true
-        name: breaker_id
+  # 2026-10-08: "Fuse switch" (DP16) removed - this Wi-Fi SPM01 has no relay and no DP16; current/power now from signed DP103/DP104
   - entity: sensor
     name: Total energy
     class: energy
@@ -47,26 +37,67 @@ entities:
   - entity: sensor
     class: current
     dps:
-      - id: 6
+      - id: 103
+        type: integer
         optional: true
-        force: true
-        type: base64
         unit: A
         name: sensor
         class: measurement
-        mask: "0000FFFFFF000000"
         mapping:
           - scale: 1000
   - entity: sensor
     class: power
     dps:
-      - id: 6
+      - id: 104
+        type: integer
         optional: true
-        force: true
-        type: base64
         unit: kW
         class: measurement
         name: sensor
-        mask: "0000000000FFFFFF"
         mapping:
           - scale: 1000
+  # --- Added 2026-10-08: datapoints seen in the Tuya app / device cache (Zemismart SPM01-D2TW-ZM, "Metering_1PN_WiFi") ---
+  - entity: sensor
+    name: Reverse energy
+    category: diagnostic
+    dps:
+      - id: 23
+        type: integer
+        optional: true
+        unit: kWh
+        class: total_increasing
+        name: sensor
+        mapping:
+          - scale: 100
+  - entity: sensor
+    class: frequency
+    category: diagnostic
+    dps:
+      - id: 32
+        type: integer
+        optional: true
+        unit: Hz
+        class: measurement
+        name: sensor
+        mapping:
+          - scale: 100
+  - entity: sensor
+    class: power_factor
+    dps:
+      - id: 50
+        type: integer
+        optional: true
+        class: measurement
+        name: sensor
+        mapping:
+          - scale: 100
+  # Clear energy counters (DP12, as in zemismart_spm02d2tw_energymeter.yaml); type to be confirmed on the device
+  - entity: button
+    name: Reset energy
+    class: restart
+    category: config
+    dps:
+      - id: 12
+        type: boolean
+        name: button
+        optional: true
